@@ -1,7 +1,4 @@
 import locale
-import re
-
-from num2words import num2words
 
 # Set the locale to Brazilian Portuguese
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
@@ -21,7 +18,8 @@ def number_to_words(number):
     # You would need to use a library like num2words with Portuguese support
     # Install it using `pip install num2words`
     #return num2words(number, lang='pt_BR')
-    return ""
+    return formatar_numero(number)
+
 
 def main():
     # Read the number from an input file
@@ -171,5 +169,6 @@ def teste():
 
 
 if __name__ == "__main__":
-    teste()
-    #main()
+    #teste()
+    main()
+
