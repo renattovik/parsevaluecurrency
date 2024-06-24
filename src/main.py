@@ -40,7 +40,7 @@ def desmembra_centena(numero) -> list:
     next = numero
 
     while True:
-        conjunto = next % 1000 # conjunto == 444
+        conjunto = next % 1000  # conjunto == 444
         next = int(next / 1000) # 1_012_999_123
 
         if conjunto == 0 and next == 0:
@@ -48,7 +48,7 @@ def desmembra_centena(numero) -> list:
 
         numeros.append(conjunto)
 
-    return numeros
+    return [num for num in reversed(numeros)]
 
 
 def parse_centena(valor) -> str:
@@ -58,51 +58,60 @@ def parse_centena(valor) -> str:
     unidades = [ "", "um", "dois", "três", "quatro", "cinco", "seis", "sete", "oito", "nove" ]
 
     # dezenas
-    dezenas_lt_20 = [ "dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove" ]
+    dezenas_lt_20 = ["dez", "onze", "doze", "treze", "quatorze", "quinze", "dezesseis", "dezessete", "dezoito", "dezenove"]
     dezenas_gt_20 = [ "",  "", "vinte", "trinta", "quarenta", "cinquenta", "sessenta", "setenta", "oitenta", "noventa" ]
 
     # centenas
-    centenas = [ "cem", "cento", "duzentos", "trezentos", "quatrocentos", "quinheitos", "seissentos", "setessentos", "oitocentos", "novessentos" ]
+    centenas = [ "cem", "cento", "duzentos", "trezentos", "quatrocentos", "quinhentos", "seissentos", "setecentos", "oitocentos", "novecentos" ]
 
     if valor == 100:
-        #pos.append(0)
-        extenso += centenas[0] + " "
+        extenso += centenas[0]
     if 100 < valor < 200:
-        #pos.append(1)
         extenso += centenas[1] + " e "
     if valor > 200:
-        #pos.append(int(valor/100))
         extenso += centenas[int(valor/100)] + " e "
-    if valor % 100 >= 20:
-        #pos.append(int((valor % 100) / 10))
-        extenso += dezenas_gt_20[int((valor % 100) / 10)] + " e "
+    if valor % 100 == 20:
+        extenso += dezenas_gt_20[int((valor % 100) / 10)]
+    if valor % 100 > 20:
+        extenso += dezenas_gt_20[int((valor % 100) / 10)]
+        if 0 < valor % 10 < 10:
+            extenso += " e "
+
     if 9 < valor % 100 < 20:
-        #pos.append((valor % 10))
-        extenso += dezenas_lt_20[valor % 10] + " "
+        extenso += dezenas_lt_20[valor % 10]
     elif 0 < valor % 10 < 10:
-        #pos.append(valor % 10)
-        extenso += unidades[valor % 10] + " "
+        extenso += unidades[valor % 10]
 
     return extenso
 
 
-def parse_valor(valor) -> str:
-    # milhares
-    milhares = [ "", "mil", "milh", "bilh", "trilh" ]
-
-    ld_valor = desmembra_centena(valor)
-
+def parse(valor) -> (int, str):
+    milhares = [ "", "mil", " milh", " bilh", " trilh" ]
     extenso = ""
     count_zero = 0
-    for i in range(len(ld_valor), 0, -1):
-        if ld_valor[i - 1] == 0:
+    ld_valor = desmembra_centena(valor)
+
+    for i in range(len(ld_valor)):
+        if ld_valor[i] == 0:
             count_zero += 1
             continue
 
-        extenso += parse_centena(ld_valor[i - 1])
-        extenso += "" if milhares[i - 1] == "" else "mil " if milhares[i - 1] == "mil" else milhares[i - 1] + "ão " if ld_valor[i - 1] == 1 else milhares[i - 1] + "ões "
+        extenso += parse_centena(ld_valor[i])
+        extenso += "" if milhares[(len(ld_valor) - i) - 1] == "" else " mil" if milhares[(len(ld_valor) - i) - 1] == "mil" \
+            else milhares[(len(ld_valor) - i) - 1] + "ão" if ld_valor[i] == 1 else milhares[(len(ld_valor) - i) - 1] + "ões"
 
-    # ajuste
+        if ld_valor[(len(ld_valor) - i) - 1] > 100 and len(ld_valor) > 1 and i + 1 < len(ld_valor):
+            extenso += ", "
+        else:
+            extenso += " "
+
+    return count_zero, extenso
+
+
+def parse_valor(valor) -> str:
+    count_zero, extenso = parse(valor)
+
+    # ajustes
     if valor == 1:
         extenso += "real"
     else:
@@ -115,21 +124,13 @@ def parse_valor(valor) -> str:
 
 
 def parse_centavos(centavos) -> str:
-    # milhares
-    milhares = [ "", "mil", "milh", "bilh", "trilh" ]
+    _, extenso = parse(centavos)
 
-    ld_centavos = desmembra_centena(centavos)
-
-    extenso = ""
-
-    for i in range(len(ld_centavos), 0, -1):
-        extenso += parse_centena(ld_centavos[i - 1])
-        extenso += "" if milhares[i - 1] == "" else "mil" if milhares[i - 1] == "mil" else milhares[i - 1] + "ão" if \
-        ld_centavos[i - 1] == 1 else milhares[i - 1] + "ões"
-        if centavos == 1:
-            extenso += "centavo" if milhares[i - 1] == "" else " e "
-        else:
-            extenso += "centavos" if milhares[i - 1] == "" else " e "
+    # ajustes
+    if centavos == 1:
+        extenso += "centavo"
+    else:
+        extenso += "centavos"
 
     return extenso
 
@@ -152,7 +153,10 @@ def formatar_numero(numero) -> str:
 
 
 def teste():
+    print(formatar_numero(999_666_234_567_890_01))
+    print(formatar_numero(999_666_234_567_830_01))
     print(formatar_numero(1_012_999_123_444))
+    print(formatar_numero(100000002))
     print(formatar_numero(100000001))
     print(formatar_numero(100))
     print(formatar_numero(101))
@@ -160,6 +164,8 @@ def teste():
     print(formatar_numero(100000))
     print(formatar_numero(99900))
     print(formatar_numero(33300))
+    print(formatar_numero(10000))
+    print(formatar_numero(23))
     print(formatar_numero(21))
     print(formatar_numero(20))
     print(formatar_numero(19))
