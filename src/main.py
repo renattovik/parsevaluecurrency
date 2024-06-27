@@ -4,7 +4,7 @@ import locale
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 
-def desmembra_centena(numero):
+def desmembra_centena(numero) -> list:
     numeros = []
     next = numero
 
@@ -79,7 +79,7 @@ def parse(valor) -> (int, str):
     return count_zero, " ".join(extenso).strip()
 
 
-def parse_valor(valor):
+def parse_valor(valor) -> str:
     extenso = []
     count_zero, txt = parse(valor)
     extenso.append(txt)
@@ -110,7 +110,7 @@ def parse_centavos(centavos) -> str:
     return " ".join(extenso).strip()
 
 
-def escreve_numero_extenso(numero):
+def escreve_numero_extenso(numero) -> str:
     valor = numero // 100
     centavos = numero % 100
 
@@ -125,14 +125,14 @@ def escreve_numero_extenso(numero):
     return " ".join(extenso).strip()
 
 
-def number_to_reais(number):
+def number_to_reais(number) -> str:
     # Format the number as currency in Brazilian format
     nnumber = float('{}.{}'.format(int(number / 100), int(number % 100)))
     int_part, dec_part = format(nnumber, ',.2f').split('.')
     return f"R$ {int_part.replace(',', '.')},{dec_part}"
 
 
-def number_to_words(number):
+def number_to_words(number) -> str:
     return escreve_numero_extenso(number)
 
 
