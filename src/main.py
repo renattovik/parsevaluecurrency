@@ -4,31 +4,6 @@ import locale
 locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 
-def number_to_reais(number):
-    # Format the number as currency in Brazilian format
-    nnumber = float('{}.{}'.format(int(number / 100), int(number % 100)))
-    int_part, dec_part = format(nnumber, ',.2f').split('.')
-    return f"R$ {int_part.replace(',', '.')},{dec_part}"
-
-
-def number_to_words(number):
-    return escreve_numero_extenso(number)
-
-
-def main():
-    # Read the number from an input file
-    with open('input.txt', 'r') as file:
-        number = int(file.read().strip())
-
-    # Format the number in reais and convert to words
-    formatted_number = number_to_reais(number)
-    words = number_to_words(number)
-
-    # Write the formatted number and words to an output file
-    with open('output.txt', 'w') as file:
-        file.write(f"{formatted_number}\n{words}\n")
-
-
 def desmembra_centena(numero):
     numeros = []
     next = numero
@@ -114,7 +89,7 @@ def parse_valor(valor):
     else:
         if count_zero >= 2:
             extenso.append("de")
-        
+
         extenso.append("reais")
 
     return " ".join(extenso).strip()
@@ -148,6 +123,31 @@ def escreve_numero_extenso(numero):
         extenso.append(parse_centavos(centavos))
 
     return " ".join(extenso).strip()
+
+
+def number_to_reais(number):
+    # Format the number as currency in Brazilian format
+    nnumber = float('{}.{}'.format(int(number / 100), int(number % 100)))
+    int_part, dec_part = format(nnumber, ',.2f').split('.')
+    return f"R$ {int_part.replace(',', '.')},{dec_part}"
+
+
+def number_to_words(number):
+    return escreve_numero_extenso(number)
+
+
+def main():
+    # Read the number from an input file
+    with open('input.txt', 'r') as file:
+        number = int(file.read().strip())
+
+    # Format the number in reais and convert to words
+    formatted_number = number_to_reais(number)
+    words = number_to_words(number)
+
+    # Write the formatted number and words to an output file
+    with open('output.txt', 'w') as file:
+        file.write(f"{formatted_number}\n{words}\n")
 
 
 def teste():
