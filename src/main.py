@@ -178,5 +178,5 @@ def teste():
 
 
 if __name__ == "__main__":
-    teste()
-    # main()
+    #teste()
+    main()
